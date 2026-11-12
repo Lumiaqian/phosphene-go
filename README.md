@@ -31,7 +31,7 @@ open "$HOME/Applications/Phosphene Go.app"
 
 `build-local.sh` 生成 `dist/darwin-arm64/Phosphene Go.app`，将扩展嵌入 `Contents/Extensions`，从内到外执行本地 ad-hoc 签名并校验。无需本机 Apple 开发证书。`install-local.sh` 会先测试和构建，成功后才更新 `~/Applications/Phosphene Go.app`。
 
-首次安装通过系统设置选中轮播入口。开发中更新一个正在运行的扩展后，若系统仍保留旧进程，可重新选择入口，或退出管理端后运行 `killall -TERM WallpaperAgent` 让系统重建墙纸服务。后者会短暂重建所有显示器的墙纸。
+首次安装通过系统设置选中轮播入口。`scripts/install-local.sh` 替换扩展后会自动运行 `killall -TERM WallpaperAgent` 让系统重建墙纸服务，所有显示器的墙纸会短暂闪一下。若其他方式更新后系统仍保留旧进程，可重新选择入口，或退出管理端后手动运行同一命令。
 
 首次导入多段现有素材，也可以在管理端完全退出后运行：
 
