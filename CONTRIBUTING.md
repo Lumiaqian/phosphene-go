@@ -10,15 +10,15 @@ Go 写配置，扩展写运行进度。不能把读取器 EOF 当成展示结束
 
 ```sh
 scripts/test.sh
-go tool mygo native check modules/platform
+go tool mygo native check internal/platform
 swiftformat --lint .
-swiftlint lint PhospheneExtension modules/platform/swift/Sources/Platform/Platform.swift tests/main.swift
+swiftlint lint PhospheneExtension internal/platform/swift/Sources/Platform/Platform.swift tests/main.swift
 scripts/build-local.sh
 ```
 
 `Phosphene.xcodeproj` 只构建扩展，主程序由 MyGO 构建。先签扩展，再签宿主；不得同时保留多个已注册的同 Bundle ID 构建副本。脚本会注销 `dist` 中的副本，只注册安装目录。
 
-原生模块规则位于 `modules/platform/AGENTS.md`。修改接口后通过 `go tool mygo native check modules/platform` 生成桥接，不能手改 `platform_native.go` 或 `Platform.mygo.swift`。这些生成文件和构建产品不参加格式检查。
+原生模块规则位于 `internal/platform/AGENTS.md`。修改接口后通过 `go tool mygo native check internal/platform` 生成桥接，不能手改 `platform_native.go` 或 `Platform.mygo.swift`。这些生成文件和构建产品不参加格式检查。
 
 ## 本机验收
 

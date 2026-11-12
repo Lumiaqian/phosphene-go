@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/Lumiaqian/phosphene-go/internal/catalog"
-	"github.com/Lumiaqian/phosphene-go/modules/platform"
+	"github.com/Lumiaqian/phosphene-go/internal/platform"
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
 	"github.com/egoist/mygo/ui/video"

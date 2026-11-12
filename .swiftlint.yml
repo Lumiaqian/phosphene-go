@@ -47,5 +47,5 @@ excluded:
   - build
   - dist
   - .mygo
-  - modules/platform/swift/.build
-  - modules/platform/swift/Sources/Platform/Platform.mygo.swift
+  - internal/platform/swift/.build
+  - internal/platform/swift/Sources/Platform/Platform.mygo.swift

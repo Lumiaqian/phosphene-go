@@ -45,7 +45,7 @@ open -n -W "$HOME/Applications/Phosphene Go.app" --args --import "/absolute/path
 
 - `main.go`、`views.go`：MyGO 应用、菜单栏、资料库与设置界面。
 - `internal/catalog`：Go 管理的资料库、导入、原子配置发布与删除清理。
-- `modules/platform`：Swift 原生媒体探测、缩略图、稳定显示器标识与变更通知。桥接代码由 MyGO 生成。
+- `internal/platform`：Swift 原生媒体探测、缩略图、稳定显示器标识与变更通知。桥接代码由 MyGO 生成。
 - `PhospheneExtension`：系统接入、原生解码、独立轮播、锁屏亮屏及尺寸恢复。
 - [跨语言契约与播放状态](docs/ARCHITECTURE.md)、[使用及回退](docs/USAGE.md)、[实机验收记录](docs/VALIDATION.md)。
 
@@ -65,9 +65,9 @@ open -n -W "$HOME/Applications/Phosphene Go.app" --args --import "/absolute/path
 
 ```sh
 scripts/test.sh                         # Go race tests、Swift 轮播/状态/尺寸测试、JSON 双向互读、go vet
-go tool mygo native check modules/platform
+go tool mygo native check internal/platform
 swiftformat --lint .
-swiftlint lint PhospheneExtension modules/platform/swift/Sources/Platform/Platform.swift tests/main.swift
+swiftlint lint PhospheneExtension internal/platform/swift/Sources/Platform/Platform.swift tests/main.swift
 ```
 
 SwiftFormat / SwiftLint 使用 Homebrew 的独立工具。生成的桥接文件和构建目录不参与格式检查。测试不会修改正在使用的墙纸资料库。

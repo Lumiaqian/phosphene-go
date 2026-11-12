@@ -26,4 +26,4 @@
 
 # Preserve indentation on empty lines
 --trimwhitespace nonblank
---exclude build,dist,.mygo,modules/platform/swift/.build,modules/platform/swift/Sources/Platform/Platform.mygo.swift
+--exclude build,dist,.mygo,internal/platform/swift/.build,internal/platform/swift/Sources/Platform/Platform.mygo.swift

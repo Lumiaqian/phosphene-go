@@ -12,7 +12,7 @@ import (
 
 func fixture(t *testing.T) Config {
 	t.Helper()
-	b, e := os.ReadFile("../../tests/fixtures/catalog.json")
+	b, e := os.ReadFile("testdata/catalog.json")
 	if e != nil {
 		t.Fatal(e)
 	}
