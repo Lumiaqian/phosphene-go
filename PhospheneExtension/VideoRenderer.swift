@@ -33,21 +33,39 @@ final class VideoRenderer: @unchecked Sendable {
     /// `start()` has built the pipeline. Before that a target only sets the logical
     /// state, which `start()` then honors.
     private var hasStarted = false
-    /// The logical pause state. The timebase rate follows it, through a ramp or a cut.
+    /// Only system lifecycle and an empty playlist hold the presentation clock.
     private var isPaused = false
     private var currentPolicy: PlaybackPolicy = .full
-    private var rampTimer: (any DispatchSourceTimer)?
     private var deepPauseTimer: (any DispatchSourceTimer)?
-    /// Picks the file for the next loop from the current policy (full-rate original or
-    /// a reduced-frame-rate variant).
-    private var variantSelector: (@Sendable (PlaybackPolicy) -> URL)?
+    private var startPosition: Double
+    private var duration: Double
+    private var clockEpoch = 0
+    private var failed = false
+
+    struct ClockSample: Sendable {
+        let url: URL
+        let seconds: Double
+        let openURLs: [URL]
+        let epoch: Int
+        let ready: Bool
+        let failed: Bool
+    }
+    func clockSample() -> ClockSample {
+        queue.sync {
+            ClockSample(
+                url: asset.url,
+                seconds: max(0, min(CMTimebaseGetTime(timebase).seconds, lastEnqueuedEnd.seconds)),
+                openURLs: [asset.url] + [currentReader, nextReader].compactMap { ($0?.asset as? AVURLAsset)?.url },
+                epoch: clockEpoch,
+                ready: hasStarted && !flushInFlight && isRunning,
+                failed: failed,
+            )
+        }
+    }
 
     /// The task feeding this renderer its surface's targets (`PlaybackStore.follow`).
     private let followTask = OSAllocatedUnfairLock<Task<Void, Never>?>(initialState: nil)
 
-    /// The file as it was when the asset was opened. A video made again under the
-    /// same name is a new file the open readers never see.
-    private var openedFile: FileIdentity?
     private var currentReader: AVAssetReader?
     private var currentOutput: AVAssetReaderTrackOutput?
     private var nextReader: AVAssetReader?
@@ -70,10 +88,12 @@ final class VideoRenderer: @unchecked Sendable {
     private var ptsOffset: CMTime = .zero
     private var lastEnqueuedEnd: CMTime = .zero
 
+    @MainActor
     static func create(
         rootLayer: CALayer,
         videoURL: URL,
         stillImage: CGImage? = nil,
+        position: Double = 0,
     ) async throws -> VideoRenderer {
         let asset = AVURLAsset(url: videoURL)
         let tracks = try await asset.loadTracks(withMediaType: .video)
@@ -83,6 +103,8 @@ final class VideoRenderer: @unchecked Sendable {
             ])
         }
 
+        let duration = try await track.load(.timeRange).duration.seconds
+        guard duration.isFinite, duration > 0 else { throw CocoaError(.fileReadCorruptFile) }
         let displayLayer = AVSampleBufferDisplayLayer()
         displayLayer.videoGravity = .resizeAspectFill
         displayLayer.frame = rootLayer.bounds
@@ -106,21 +128,25 @@ final class VideoRenderer: @unchecked Sendable {
             asset: asset,
             videoTrack: track,
             stillImage: stillImage,
+            position: position, duration: duration,
         )
     }
 
+    @MainActor
     private init(
         rootLayer: CALayer,
         displayLayer: AVSampleBufferDisplayLayer,
         asset: AVURLAsset,
         videoTrack: AVAssetTrack,
         stillImage: CGImage?,
+        position: Double, duration: Double,
     ) {
+        self.duration = duration
+        self.startPosition = max(0, position).truncatingRemainder(dividingBy: duration)
         self.displayLayer = displayLayer
         self.renderer = displayLayer.sampleBufferRenderer
         self.asset = asset
         self.videoTrack = videoTrack
-        openedFile = FileIdentity(of: asset.url)
 
         var tb: CMTimebase?
         CMTimebaseCreateWithSourceClock(
@@ -197,14 +223,16 @@ final class VideoRenderer: @unchecked Sendable {
             firstFrameShown()
             return
         }
+        let start = CMTime(seconds: startPosition, preferredTimescale: 60_000)
+        reader.timeRange = CMTimeRange(start: start, duration: .positiveInfinity)
         let output = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: nil)
         output.alwaysCopiesSampleData = false
         reader.add(output)
-        reader.startReading()
+        guard reader.startReading() else { failed = true; firstFrameShown(); return }
         hasStarted = true
 
         // Reset the timebase before the first enqueue so the frame isn't seen as late.
-        CMTimebaseSetTime(timebase, time: .zero)
+        CMTimebaseSetTime(timebase, time: start)
 
         // Enqueue the first frame and flush it to the render server inside an
         // action-free transaction, so the context is displaying video before the
@@ -215,12 +243,14 @@ final class VideoRenderer: @unchecked Sendable {
             renderer.enqueue(firstSample)
             CATransaction.commit()
             CATransaction.flush()
+        } else {
+            failed = true; firstFrameShown(); return
         }
 
         currentReader = reader
         currentOutput = output
         ptsOffset = .zero
-        lastEnqueuedEnd = .zero
+        lastEnqueuedEnd = start
 
         CMTimebaseSetRate(timebase, rate: 1.0)
         firstFrameShown()
@@ -248,60 +278,19 @@ final class VideoRenderer: @unchecked Sendable {
         traceLog("  [resize #\(debugID)] → \(destSize) @\(scale)x")
     }
 
-    /// Replace the loop-boundary variant selector.
-    func setVariantSelector(_ selector: @escaping @Sendable (PlaybackPolicy) -> URL) {
-        queue.async { [self] in variantSelector = selector }
-    }
-
-    /// Switch to a different video in place, reusing this renderer's `displayLayer`.
-    /// The layer is already attached to the surface's context and hosted by
-    /// WallpaperAgent, so feeding it frames from a new asset updates the desktop,
-    /// whereas a fresh `AVSampleBufferDisplayLayer` added to an already-hosted context
-    /// does not composite.
-    ///
-    /// Serialized on `queue`: the track load blocks the queue thread (one we own,
-    /// which already blocks for decodes), every switch runs to completion in FIFO
-    /// order, and rapid switching is last-requested-wins. The only async hop is the
-    /// renderer's `flush`, which is serialized and coalesces rapid switches. The pause
-    /// state carries over: a paused surface shows the new video's first frame.
-    func switchVideo(to url: URL, selector: @escaping @Sendable (PlaybackPolicy) -> URL) {
+    /// Switch in place and retain the displayed frame until the new decoder is ready.
+    /// force is used only when a different surface takes over this display's session.
+    func play(_ url: URL, at position: Double, force: Bool = false) {
         queue.async { [self] in
-            variantSelector = selector
-            guard isRunning else { return }
-            if asset.url == url {
-                traceLog("  [switchVideo #\(debugID)] already on \(url.lastPathComponent)")
-                return
-            }
-            open(url, because: "switch")
+            guard isRunning, force || asset.url != url else { return }
+            let newAsset = AVURLAsset(url: url)
+            guard let (track, length) = Self.loadVideoTrackBlocking(newAsset) else { failed = true; return }
+            guard length.isFinite, length > 0 else { failed = true; return }
+            failed = false
+            asset = newAsset; videoTrack = track; duration = length
+            startPosition = max(0, position).truncatingRemainder(dividingBy: duration)
+            restartWithCurrentAsset()
         }
-    }
-
-    /// Play `url` again when it is the file this renderer opened but replaced on
-    /// disk since (a video made again): the readers hold the old file. A different
-    /// URL switches as ``switchVideo(to:selector:)`` does.
-    func reload(to url: URL, selector: @escaping @Sendable (PlaybackPolicy) -> URL) {
-        queue.async { [self] in
-            variantSelector = selector
-            guard isRunning else { return }
-            if asset.url == url, openedFile == FileIdentity(of: url) {
-                return
-            }
-            open(url, because: "replaced")
-        }
-    }
-
-    /// Open `url` as the current asset and restart from its first frame. On `queue`.
-    private func open(_ url: URL, because reason: String) {
-        let newAsset = AVURLAsset(url: url)
-        guard let track = Self.loadFirstVideoTrackBlocking(newAsset) else {
-            traceLog("  [switchVideo #\(debugID)] no video track in \(url.lastPathComponent)")
-            return
-        }
-        asset = newAsset
-        videoTrack = track
-        openedFile = FileIdentity(of: url)
-        traceLog("  [switchVideo #\(debugID)] \(reason): restarting from 0 → \(url.lastPathComponent)")
-        restartWithCurrentAsset()
     }
 
     /// Tag a sample buffer so the renderer displays it immediately, replacing all
@@ -325,17 +314,21 @@ final class VideoRenderer: @unchecked Sendable {
     /// `queue` — it blocks that (real, owned) thread on a semaphore while AVFoundation
     /// loads the track on its own internal queue, so there's no cooperative-executor
     /// starvation and no out-of-order Task completion. Local files load in a few ms.
-    private static func loadFirstVideoTrackBlocking(_ asset: AVURLAsset) -> AVAssetTrack? {
-        traceLog("  [load] blocking-load START \(asset.url.lastPathComponent) (queue will block until AVF replies)")
+    private static func loadVideoTrackBlocking(_ asset: AVURLAsset) -> (AVAssetTrack, Double)? {
         let sem = DispatchSemaphore(value: 0)
-        nonisolated(unsafe) var result: AVAssetTrack?
-        asset.loadTracks(withMediaType: .video) { tracks, _ in
-            result = tracks?.first
-            sem.signal()
+        let result = OSAllocatedUnfairLock<SendableBox<(AVAssetTrack, Double)>?>(initialState: nil)
+        Task.detached {
+            defer { sem.signal() }
+            do {
+                if let track = try await asset.loadTracks(withMediaType: .video).first {
+                    let duration = try await track.load(.timeRange).duration.seconds
+                    let loaded = SendableBox(value: (track, duration))
+                    result.withLock { $0 = loaded }
+                }
+            } catch { extensionLog("[Renderer] Cannot open video: \(error)") }
         }
         sem.wait()
-        traceLog("  [load] blocking-load DONE \(asset.url.lastPathComponent) track=\(result != nil ? "ok" : "nil")")
-        return result
+        return result.withLock { $0 }?.value
     }
 
     /// Stop playback for good. Synchronous with the renderer queue, so no callback is
@@ -345,7 +338,6 @@ final class VideoRenderer: @unchecked Sendable {
         queue.sync {
             extensionLog("  [stop #\(debugID)] stopping renderer for \(asset.url.lastPathComponent)")
             isRunning = false
-            cancelRamp()
             cancelDeepPauseTimer()
             renderer.stopRequestingMediaData()
             currentReader?.cancelReading()
@@ -369,20 +361,17 @@ final class VideoRenderer: @unchecked Sendable {
 
     private func reconcile(to target: SurfaceTarget) {
         guard isRunning, target.policy != currentPolicy else { return }
-        extensionLog("  [target #\(debugID)] \(currentPolicy) → \(target.policy)\(target.ramps ? " (ramp)" : "") asset=\(asset.url.lastPathComponent)")
         currentPolicy = target.policy
-        switch (target.policy, target.ramps) {
-        case (.paused, true): rampDown()
-        case (.paused, false): pause()
-        case (_, true): rampUp()
-        case (_, false): resume()
+        if target.policy == .paused {
+            pause()
+        } else {
+            resume()
         }
     }
 
     private func pause() {
         guard !isPaused else { return }
         isPaused = true
-        cancelRamp()
         CMTimebaseSetRate(timebase, rate: 0.0)
         scheduleDeepPause()
     }
@@ -390,8 +379,8 @@ final class VideoRenderer: @unchecked Sendable {
     private func resume() {
         guard isPaused else { return }
         isPaused = false
-        cancelRamp()
         cancelDeepPauseTimer()
+        guard !flushInFlight else { return }
         if currentReader == nil {
             wakeFromDeepPause()
         } else {
@@ -407,104 +396,12 @@ final class VideoRenderer: @unchecked Sendable {
         CMTimebaseSetRate(timebase, rate: 1.0)
     }
 
-    // MARK: - Ramp (Apple-like lock screen transition)
-
-    /// Ramp durations in seconds and step interval aligned to display refresh rate.
-    /// Ramp-down (unlock → desktop pause) matches the ~6 s deceleration of Apple's
-    /// built-in wallpapers after unlock; ramp-up (→ lock screen) stays short so
-    /// playback reaches full speed while the lock reveal is still on screen.
-    private static let rampUpDuration: TimeInterval = 2.0
-    private static let rampDownDuration: TimeInterval = 6.0
-    private static let rampStepInterval: TimeInterval = 1.0 / 120.0
-
-    /// How long a paused surface's clock runs after its first frame is enqueued.
     private static let firstFrameRunway: TimeInterval = 0.25
-
-    /// Let the clock run briefly, then stop it. A display layer whose clock stops at
-    /// time 0 before it has shown a frame never shows one: the surface stays black
-    /// until playback next runs, e.g. on the lock screen. Runs on `queue`.
     private func holdAfterFirstFrame() {
         queue.asyncAfter(deadline: .now() + Self.firstFrameRunway) { [self] in
-            guard isRunning, isPaused, rampTimer == nil else { return }
-            CMTimebaseSetRate(timebase, rate: 0.0)
+            guard isRunning, isPaused else { return }
+            CMTimebaseSetRate(timebase, rate: 0)
         }
-    }
-
-    /// Gradually reduce the timebase rate to zero, then freeze.
-    ///
-    /// `isPaused` flips immediately: it is the logical state, and the rate follows.
-    /// Flipping it at ramp completion would make a resume arriving mid-ramp look like
-    /// a no-op and strand the rate wherever the cancelled ramp left it (slow motion).
-    private func rampDown() {
-        guard !isPaused else { return }
-        isPaused = true
-        cancelDeepPauseTimer()
-        ramp(to: 0.0, over: Self.rampDownDuration) { [self] in scheduleDeepPause() }
-    }
-
-    /// Gradually raise the timebase rate to 1.0 from wherever it is now, so reversing
-    /// a mid-flight ramp-down accelerates from the current speed.
-    private func rampUp() {
-        guard isPaused else { return }
-        isPaused = false
-        cancelDeepPauseTimer()
-        guard currentReader != nil else {
-            // No frames to ramp into: wake instantly instead.
-            cancelRamp()
-            wakeFromDeepPause()
-            return
-        }
-        ramp(to: 1.0, over: Self.rampUpDuration)
-    }
-
-    /// Ease the timebase rate from its CURRENT value to `target`.
-    ///
-    /// Starting from the live rate is what makes ramps reversible: a reversal
-    /// mid-flight travels the remaining distance in proportionally less time,
-    /// keeping the rate curve continuous instead of replaying a full schedule
-    /// from 1.0 or 0 (which made a paused wallpaper leap to speed and decelerate).
-    private func ramp(to target: Double, over fullDuration: TimeInterval, then completion: (() -> Void)? = nil) {
-        cancelRamp()
-        let start = Double(CMTimebaseGetRate(timebase))
-        let distance = abs(target - start)
-        guard distance > 0.001 else {
-            CMTimebaseSetRate(timebase, rate: target)
-            completion?()
-            return
-        }
-        let totalSteps = RampMath.steps(distance: distance, fullDuration: fullDuration, stepInterval: Self.rampStepInterval)
-        var step = 0
-
-        // First step lands immediately so a resume never sits on a dead frame.
-        if target > start {
-            CMTimebaseSetRate(timebase, rate: max(start, 0.01))
-        }
-
-        let timer = DispatchSource.makeTimerSource(queue: queue)
-        timer.schedule(deadline: .now() + Self.rampStepInterval, repeating: Self.rampStepInterval)
-        timer.setEventHandler { [weak self] in
-            guard let self, isRunning else {
-                timer.cancel()
-                return
-            }
-            step += 1
-            let progress = Double(step) / Double(totalSteps)
-            let rate = RampMath.rate(from: start, to: target, progress: progress)
-            CMTimebaseSetRate(timebase, rate: rate)
-
-            if step >= totalSteps {
-                timer.cancel()
-                rampTimer = nil
-                completion?()
-            }
-        }
-        rampTimer = timer
-        timer.resume()
-    }
-
-    private func cancelRamp() {
-        rampTimer?.cancel()
-        rampTimer = nil
     }
 
     // MARK: - Deep Pause
@@ -563,7 +460,10 @@ final class VideoRenderer: @unchecked Sendable {
         nextReader = nil
         nextOutput = nil
 
-        let resumeTime = CMTimebaseGetTime(timebase)
+        let seconds = max(0, CMTimebaseGetTime(timebase).seconds).truncatingRemainder(dividingBy: duration)
+        let resumeTime = CMTime(seconds: seconds, preferredTimescale: 60_000)
+        clockEpoch += 1
+        CMTimebaseSetTime(timebase, time: resumeTime)
         let continuing = seamlessResume && resumeTime.isNumeric && resumeTime > .zero
         // Keep the last displayed frame when continuing (no black); clear it on error reset.
         renderer.flush(removingDisplayedImage: !continuing)
@@ -631,6 +531,7 @@ final class VideoRenderer: @unchecked Sendable {
             return
         }
         flushInFlight = true
+        clockEpoch += 1
         // Freeze the clock up front so it can't advance past PTS 0 during the async
         // flush — otherwise the first frames arrive "late" and get dropped.
         CMTimebaseSetRate(timebase, rate: 0.0)
@@ -665,17 +566,19 @@ final class VideoRenderer: @unchecked Sendable {
                     currentOutput = nil
                     return
                 }
+                let start = CMTime(seconds: startPosition, preferredTimescale: 60_000)
+                reader.timeRange = CMTimeRange(start: start, duration: .positiveInfinity)
                 let output = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: nil)
                 output.alwaysCopiesSampleData = false
                 reader.add(output)
-                reader.startReading()
+                guard reader.startReading() else { failed = true; return }
                 currentReader = reader
                 currentOutput = output
 
                 // Fresh timeline from 0.
                 ptsOffset = .zero
-                lastEnqueuedEnd = .zero
-                CMTimebaseSetTime(timebase, time: .zero)
+                lastEnqueuedEnd = start
+                CMTimebaseSetTime(timebase, time: start)
 
                 // Enqueue the first (IDR) frame while the clock is still frozen, exactly
                 // like start(), so it isn't dropped as late. Tag it DisplayImmediately so
@@ -692,13 +595,17 @@ final class VideoRenderer: @unchecked Sendable {
                             ? CMTimeAdd(pts, dur)
                             : CMTimeAdd(pts, CMTime(value: 1, timescale: 60))
                     }
+                } else {
+                    failed = true; return
                 }
 
                 CMTimebaseSetRate(timebase, rate: 1.0)
                 if isPaused {
                     holdAfterFirstFrame()
                 }
-                traceLog("  [restart #\(debugID)] playing \(asset.url.lastPathComponent) rate=\(isPaused ? 0 : 1) rendererStatus=\(renderer.status.rawValue) requiresFlush=\(renderer.requiresFlushToResumeDecoding) readerStatus=\(reader.status.rawValue) err=\(renderer.error?.localizedDescription ?? "-")")
+                traceLog("  [restart #\(debugID)] playing \(asset.url.lastPathComponent) rate=\(isPaused ? 0 : 1) "
+                    + "rendererStatus=\(renderer.status.rawValue) requiresFlush=\(renderer.requiresFlushToResumeDecoding) "
+                    + "readerStatus=\(reader.status.rawValue) err=\(renderer.error?.localizedDescription ?? "-")")
                 feedLogBudget = 4
                 prepareNextReader()
                 feedFromCurrentReader()
@@ -709,22 +616,9 @@ final class VideoRenderer: @unchecked Sendable {
     // MARK: - Preloaded Loop Reader
 
     private func prepareNextReader() {
-        // Deferred to a separate queue job so the (brief, blocking) variant track load
-        // doesn't stall whatever called us — but still strictly ordered on `queue`,
-        // no Task.
         queue.async { [weak self] in
             guard let self, isRunning else { return }
-            let nextURL = variantSelector?(currentPolicy)
-            if let nextURL, nextURL != asset.url {
-                let newAsset = AVURLAsset(url: nextURL)
-                guard let track = Self.loadFirstVideoTrackBlocking(newAsset) else {
-                    traceLog("  [Renderer] No video track in variant: \(nextURL.lastPathComponent)")
-                    return
-                }
-                installNextReader(asset: newAsset, track: track)
-            } else {
-                installNextReader(asset: asset, track: videoTrack)
-            }
+            installNextReader(asset: asset, track: videoTrack)
         }
     }
 
@@ -791,10 +685,12 @@ final class VideoRenderer: @unchecked Sendable {
             // Unrecoverable failure — full reset.
             // Dispatch async: requestMediaDataWhenReady is not reentrant.
             if renderer.status == .failed {
+                failed = true
                 extensionLog("  [Renderer] Status failed: \(renderer.error?.localizedDescription ?? "unknown"), recovering")
                 renderer.stopRequestingMediaData()
                 queue.async { [weak self] in
-                    self?.recoverFromError()
+                    self?.currentPolicy = .paused
+                    self?.pause()
                 }
                 return
             }
@@ -832,6 +728,9 @@ final class VideoRenderer: @unchecked Sendable {
                         traceLog("  [feed #\(debugID)] reader exhausted after enqueuing this tick=\(enqueuedThisTick); status=\(renderer.status.rawValue) → swapToNextReader")
                     }
                     renderer.stopRequestingMediaData()
+                    if currentReader?.status == .failed {
+                        failed = true; return
+                    }
                     queue.async { [weak self] in
                         self?.swapToNextReader()
                     }
@@ -840,7 +739,9 @@ final class VideoRenderer: @unchecked Sendable {
             }
             if feedLogBudget > 0 {
                 feedLogBudget -= 1
-                traceLog("  [feed #\(debugID)] tick enqueued=\(enqueuedThisTick) status=\(renderer.status.rawValue) requiresFlush=\(renderer.requiresFlushToResumeDecoding) ready=\(renderer.isReadyForMoreMediaData) timebase=\(CMTimebaseGetTime(timebase).seconds)")
+                traceLog("  [feed #\(debugID)] tick enqueued=\(enqueuedThisTick) status=\(renderer.status.rawValue) "
+                    + "requiresFlush=\(renderer.requiresFlushToResumeDecoding) ready=\(renderer.isReadyForMoreMediaData) "
+                    + "timebase=\(CMTimebaseGetTime(timebase).seconds)")
             }
         }
     }
@@ -872,27 +773,5 @@ final class VideoRenderer: @unchecked Sendable {
         )
 
         return adjusted ?? sample
-    }
-
-    /// Reset everything and restart playback from scratch after a decoder error.
-    private func recoverFromError() {
-        recreatePlayback()
-        CMTimebaseSetRate(timebase, rate: isPaused ? 0.0 : 1.0)
-    }
-}
-
-/// Which file a path names right now: its inode and modification date, which a
-/// replacement under the same name changes.
-struct FileIdentity: Equatable, Sendable {
-    let inode: UInt64
-    let modified: Date
-
-    init?(of url: URL) {
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-              let inode = (attributes[.systemFileNumber] as? NSNumber)?.uint64Value,
-              let modified = attributes[.modificationDate] as? Date
-        else { return nil }
-        self.inode = inode
-        self.modified = modified
     }
 }

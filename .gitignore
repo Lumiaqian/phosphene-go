@@ -75,3 +75,7 @@ DerivedData/
 build/
 # Coverage output
 *.profraw
+
+# Phosphene Go local builds
+dist/
+.mygo/

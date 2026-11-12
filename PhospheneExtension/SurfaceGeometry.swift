@@ -84,13 +84,13 @@ enum DisplayReconfiguration {
 
     private static func schedule(displayID: CGDirectDisplayID, flags: CGDisplayChangeSummaryFlags) {
         traceLog("  [geometry] display \(displayID) reconfigured (flags 0x\(String(flags.rawValue, radix: 16)))")
-        let pass = DispatchWorkItem {
-            for key in SurfaceRegistry.shared.surfaceKeys {
-                reconcileSurfaceGeometry(for: key, because: "display reconfigured")
-            }
-        }
         Lifecycle.queue.async {
             pendingPass?.cancel()
+            let pass = DispatchWorkItem {
+                for key in SurfaceRegistry.shared.surfaceKeys {
+                    reconcileSurfaceGeometry(for: key, because: "display reconfigured")
+                }
+            }
             pendingPass = pass
             Lifecycle.queue.asyncAfter(deadline: .now() + settleDelay, execute: pass)
         }

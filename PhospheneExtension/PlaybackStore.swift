@@ -25,27 +25,13 @@ final class PlaybackStore {
     private(set) var state: PlaybackState
 
     @ObservationIgnored private var cells: [SurfaceKey: SurfaceTargetCell] = [:]
-    @ObservationIgnored private var publisher: Task<Void, Never>?
 
     /// A copy of `state` readable from any thread, for code on the XPC and renderer
     /// queues that needs to peek without hopping to the main actor.
     private nonisolated static let mirror = OSAllocatedUnfairLock(initialState: PlaybackState())
 
-    private enum Keys {
-        static let lastVideoID = "selectedVideoID"
-    }
-
-    private static var stateURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("phosphene-state.json")
-    }
-
     private init() {
-        var seed = PlaybackState()
-        seed.lastVideoID = UserDefaults.standard.string(forKey: Keys.lastVideoID)
-        let initial = seed
-        state = initial
-        Self.mirror.withLock { $0 = initial }
+        state = PlaybackState()
     }
 
     // MARK: - Events
@@ -67,6 +53,7 @@ final class PlaybackStore {
         state = next
         Self.mirror.withLock { $0 = next }
         republishTargets()
+        PlaylistController.shared.lifecycleChanged()
     }
 
     private func republishTargets() {
@@ -108,60 +95,5 @@ final class PlaybackStore {
 
     nonisolated static var snapshot: PlaybackState {
         mirror.withLock { $0 }
-    }
-
-    /// The video the desktop shows, or last showed.
-    nonisolated static var currentVideoID: String? {
-        PlaybackReducer.published(snapshot).currentVideoID
-    }
-
-    // MARK: - Publishing
-
-    /// Keep `phosphene-state.json` equal to the derived published state.
-    func startPublishing() {
-        guard publisher == nil else { return }
-        publisher = Task(name: "Publish extension state") {
-            var last: PublishedState?
-            for await published in Observations({ PlaybackReducer.published(self.state) }) {
-                guard published != last else { continue }
-                last = published
-                Self.write(published)
-            }
-        }
-    }
-
-    private struct StateFile: Encodable {
-        struct Context: Encodable {
-            let displayID: UInt32
-            let videoID: String?
-            let videoName: String?
-        }
-
-        let isActive: Bool
-        let currentVideoID: String?
-        let currentVideoName: String?
-        let contexts: [Context]
-    }
-
-    private static func write(_ published: PublishedState) {
-        let library = VideoLibrary.shared
-        let file = StateFile(
-            isActive: published.isActive,
-            currentVideoID: published.currentVideoID,
-            currentVideoName: published.currentVideoID.flatMap { library.entry(for: $0)?.name },
-            contexts: published.displays.map {
-                StateFile.Context(displayID: $0.displayID, videoID: $0.videoID, videoName: $0.videoID.flatMap { library.entry(for: $0)?.name })
-            },
-        )
-        if let data = try? JSONEncoder().encode(file) {
-            try? data.write(to: stateURL, options: .atomic)
-        }
-        UserDefaults.standard.set(published.currentVideoID, forKey: Keys.lastVideoID)
-        CFNotificationCenterPostNotification(
-            CFNotificationCenterGetDarwinNotifyCenter(),
-            CFNotificationName("glass.kagerou.phosphene.stateChanged" as CFString),
-            nil, nil, true,
-        )
-        extensionLog("[Store] published: active=\(published.isActive) video=\(file.currentVideoName ?? "nil")")
     }
 }

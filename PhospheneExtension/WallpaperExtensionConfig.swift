@@ -54,7 +54,9 @@ struct WallpaperExtensionConfig: AppExtensionConfiguration {
         allTypes.add(NSURL.self)
         allTypes.add(NSError.self)
 
-        let classes = allTypes as! Set<AnyHashable>
+        guard let classes = allTypes as? Set<AnyHashable> else {
+            preconditionFailure("WallpaperExtensionKit classes cannot bridge to an NSXPC allowed-class set")
+        }
 
         let selectors: [(Selector, Int, Bool)] = [
             (#selector(WallpaperXPCHandler.acquire(withId:request:reply:)), 0, false),

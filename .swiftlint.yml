@@ -42,3 +42,10 @@ function_parameter_count:
   error: 8
 
 indentation: 4
+
+excluded:
+  - build
+  - dist
+  - .mygo
+  - modules/platform/swift/.build
+  - modules/platform/swift/Sources/Platform/Platform.mygo.swift

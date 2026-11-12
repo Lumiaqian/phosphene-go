@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#include <notify.h>
 #import <objc/runtime.h>
 #import <QuartzCore/QuartzCore.h>
 #import <bsm/libbsm.h>

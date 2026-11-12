@@ -1,253 +1,57 @@
 import AppKit
 import Foundation
 
-/// Build a fully-populated WallpaperSettingsViewModelsXPC using Codable shims.
-/// Creates one SettingsItem per video in the library.
+/// A stable tile: MyGO owns the list and timing, so edits never rewrite the system's selection.
 func buildSettingsViewModelsXPC() async -> AnyObject? {
-    let bundleID = Bundle.main.bundleIdentifier ?? "glass.kagerou.phosphene.extension"
+    let bundleID = "local.lumiaqian.phosphenego.extension"
     let library = VideoLibrary.shared
-    let groupID = GroupID(id: "video-wallpapers")
-
-    // Always re-scan to pick up changes (deletions, new deployments)
     library.scan()
-
-    let entries = library.entries
-
-    // Right-click menu on the group and every tile. Settings routes presses to
-    // invokeContextMenuAction with the item's identifier; the handler opens the
-    // matching phosphene:// URL in the companion app.
-    let addVideoMenu = ContextMenu(items: [
-        ContextMenuItem(
-            id: ContextMenuItemID(id: "add-video"),
-            localizedTitle: String(localized: "Add Video…"),
-            isDestructive: false,
-        ),
-        ContextMenuItem(
-            id: ContextMenuItemID(id: "manage-library"),
-            localizedTitle: String(localized: "Manage Library…"),
-            isDestructive: false,
-        ),
-    ])
-
-    var items = [SettingsItem]()
-    var thumbnailURLs = [URL]()
-
-    for entry in entries {
-        let videoURL = library.videoURL(for: entry)
-        let choiceID = ChoiceID(
-            id: entry.id,
-            descriptor: ChoiceIDDescriptor(
-                provider: ChoiceProviderID(rawValue: bundleID),
-                identifier: entry.id,
-                files: [videoURL],
-                configuration: Data(entry.id.utf8),
-            ),
-        )
-
-        // Generate thumbnail — skip entry if extraction fails
-        guard let thumbnailURL = await library.generateThumbnail(for: entry) else {
-            continue
-        }
-        thumbnailURLs.append(thumbnailURL)
-
-        let choiceDescriptor = ChoiceDescriptor(
+    let first = library.config.playlist.videoIDs.compactMap { library.entry(for: $0) }.first
+    let thumbnail = if let first {
+        await library.generateThumbnail(for: first)
+    } else {
+        placeholderThumbnailURL()
+    }
+    guard let thumbnail else { return makeEmptyGroupsResponse() }
+    let menu = ContextMenu(items: [ContextMenuItem(id: ContextMenuItemID(id: "manage-library"), localizedTitle: "打开 Phosphene Go", isDestructive: false)])
+    let choiceID = ChoiceID(id: playlistChoiceID, descriptor: ChoiceIDDescriptor(
+        provider: ChoiceProviderID(rawValue: bundleID), identifier: playlistChoiceID,
+        files: [], configuration: Data(playlistChoiceID.utf8),
+    ))
+    let item = SettingsItem(
+        id: choiceID,
+        localizedName: "Phosphene Go 轮播",
+        thumbnail: .image(url: thumbnail),
+        choice: ChoiceDescriptor(
             id: choiceID,
             provider: ChoiceProviderID(rawValue: bundleID),
-            identifier: entry.id,
-            name: entry.name,
-            localizedDescription: String(localized: "Animated video wallpaper"),
-            thumbnail: .image(url: thumbnailURL),
+            identifier: playlistChoiceID,
+            name: "Phosphene Go 轮播",
+            localizedDescription: "各屏独立续播 · 在 Phosphene Go 中编辑列表",
+            thumbnail: .image(url: thumbnail),
             isDownloaded: true,
             options: [],
-        )
-
-        let item = SettingsItem(
-            id: choiceID,
-            localizedName: entry.name,
-            thumbnail: .image(url: thumbnailURL),
-            choice: choiceDescriptor,
-            contentBadge: .video,
-            showInTopLevel: true,
-            sortOrder: 0,
-            // `.purgeable` gives the tile the pane's "Remove Download" button, which
-            // reaches `removeDownload(for:)` with this choice ID. Never `.removable`:
-            // the pane force-unwraps a removable item's `choiceRequest` (a video has
-            // none, so Remove crashed System Settings), and removal requests are routed
-            // only to Apple's providers.
-            disposability: .purgeable,
-            contextMenu: addVideoMenu,
-        )
-        items.append(item)
-    }
-
-    if items.count >= 2 {
-        items.append(makeShuffleItem(
-            bundleID: bundleID,
-            thumbnailURLs: thumbnailURLs,
-            contextMenu: addVideoMenu,
-        ))
-    }
-
-    // Never serve an empty group: the host caches this response on disk and (on
-    // macOS 26.6) reuses it on every Settings launch, only re-querying after a
-    // reinstall or OS update — a cached empty group hides the Phosphene section
-    // until then (issue #27). The first query fires at registration, before the
-    // user has added any video, so a fresh install always passes through here.
-    if items.isEmpty, let placeholder = makeAddVideoItem(bundleID: bundleID, contextMenu: addVideoMenu) {
-        items.append(placeholder)
-    }
-
+        ),
+        contentBadge: .video,
+        showInTopLevel: true,
+        sortOrder: 0,
+        disposability: .none,
+        contextMenu: menu,
+    )
     let group = SettingsGroup(
-        id: groupID,
-        items: items,
-        localizedName: String(localized: "Phosphene — Video Wallpapers"),
+        id: GroupID(id: "phosphenego-video-wallpapers"),
+        items: [item],
+        localizedName: "Phosphene Go",
         disposability: .none,
         sortOrder: -100,
         sortID: GroupSortID(id: "com.apple.wallpaper.aerials"),
         allChoiceID: nil,
         shouldHideItemLabels: false,
-        contextMenu: addVideoMenu,
+        contextMenu: menu,
         thumbnail: nil,
     )
-
-    let viewModel = SettingsViewModel(
-        groups: [group],
-        refreshPolicy: .default,
-        isModificationDisabled: false,
-    )
-
-    // The same groups serve both pickers: since the Sonoma unified model the
-    // screensaver is the wallpaper surface entering idle presentation, so any video
-    // choice is screensaver-capable (#26).
-    let viewModels = SettingsViewModels(
-        desktop: viewModel,
-        screenSaver: viewModel,
-    )
-
-    return remapToRealXPC(viewModels)
-}
-
-/// Item ids for the shuffle frequency picker. The ids and their interpretation are
-/// Phosphene's own; the system only stores and returns the selected id.
-enum ShuffleFrequencyID: String, CaseIterable {
-    case onWakeup
-    case onLogin
-    case fiveMinutes
-    case fifteenMinutes
-    case thirtyMinutes
-    case oneHour
-    case oneDay
-
-    var localizedName: String {
-        switch self {
-        case .onWakeup: String(localized: "On Wake")
-        case .onLogin: String(localized: "On Login")
-        case .fiveMinutes: String(localized: "Every 5 Minutes")
-        case .fifteenMinutes: String(localized: "Every 15 Minutes")
-        case .thirtyMinutes: String(localized: "Every 30 Minutes")
-        case .oneHour: String(localized: "Every Hour")
-        case .oneDay: String(localized: "Every Day")
-        }
-    }
-
-    /// Rotation period for the timed frequencies; nil for the event-driven ones.
-    var interval: TimeInterval? {
-        switch self {
-        case .onWakeup, .onLogin: nil
-        case .fiveMinutes: 5 * 60
-        case .fifteenMinutes: 15 * 60
-        case .thirtyMinutes: 30 * 60
-        case .oneHour: 60 * 60
-        case .oneDay: 24 * 60 * 60
-        }
-    }
-}
-
-/// A "Shuffle" choice modeled on Apple's aerial shuffle tiles: a composite
-/// shuffleImages thumbnail plus a frequency picker in the choice's settings header.
-private func makeShuffleItem(bundleID: String, thumbnailURLs: [URL], contextMenu: ContextMenu) -> SettingsItem {
-    let choiceID = ChoiceID(
-        id: shuffleChoiceID,
-        descriptor: ChoiceIDDescriptor(
-            provider: ChoiceProviderID(rawValue: bundleID),
-            identifier: shuffleChoiceID,
-            files: [],
-            configuration: Data(shuffleChoiceID.utf8),
-        ),
-    )
-    let frequencyPicker = MenuPickerOption(
-        id: "shuffleFrequency",
-        localizedLabel: String(localized: "Change Video"),
-        defaultValueID: ShuffleFrequencyID.onWakeup.rawValue,
-        accessibilityIdentifier: nil,
-        localizedInformativeText: nil,
-        items: ShuffleFrequencyID.allCases.map { frequency in
-            .item(MenuPickerItem(
-                id: frequency.rawValue,
-                localizedName: frequency.localizedName,
-                accessibilityIdentifier: nil,
-                localizedInformativeText: nil,
-                isDownloaded: true,
-            ))
-        },
-    )
-    return SettingsItem(
-        id: choiceID,
-        localizedName: String(localized: "Shuffle All"),
-        thumbnail: .shuffleImages(urls: thumbnailURLs),
-        choice: ChoiceDescriptor(
-            id: choiceID,
-            provider: ChoiceProviderID(rawValue: bundleID),
-            identifier: shuffleChoiceID,
-            name: String(localized: "Shuffle All"),
-            localizedDescription: String(localized: "Rotate through your video wallpapers"),
-            thumbnail: .shuffleImages(urls: thumbnailURLs),
-            isDownloaded: true,
-            options: [.picker(frequencyPicker)],
-        ),
-        contentBadge: .video,
-        showInTopLevel: true,
-        sortOrder: 1_000,
-        disposability: .none,
-        contextMenu: contextMenu,
-    )
-}
-
-/// The tile shown while the library is empty. Selecting it renders the acquire
-/// path's gradient fallback (it has no video file); its context menu — and its
-/// description — route the user to adding a video.
-private func makeAddVideoItem(bundleID: String, contextMenu: ContextMenu) -> SettingsItem? {
-    guard let thumbnailURL = placeholderThumbnailURL() else { return nil }
-    let id = "add-video-placeholder"
-    let choiceID = ChoiceID(
-        id: id,
-        descriptor: ChoiceIDDescriptor(
-            provider: ChoiceProviderID(rawValue: bundleID),
-            identifier: id,
-            files: [],
-            configuration: Data(id.utf8),
-        ),
-    )
-    return SettingsItem(
-        id: choiceID,
-        localizedName: String(localized: "Add Video…"),
-        thumbnail: .image(url: thumbnailURL),
-        choice: ChoiceDescriptor(
-            id: choiceID,
-            provider: ChoiceProviderID(rawValue: bundleID),
-            identifier: id,
-            name: String(localized: "Add Video…"),
-            localizedDescription: String(localized: "Right-click to add a video"),
-            thumbnail: .image(url: thumbnailURL),
-            isDownloaded: true,
-            options: [],
-        ),
-        contentBadge: .none,
-        showInTopLevel: true,
-        sortOrder: 0,
-        disposability: .none,
-        contextMenu: contextMenu,
-    )
+    let model = SettingsViewModel(groups: [group], refreshPolicy: .default, isModificationDisabled: false)
+    return remapToRealXPC(SettingsViewModels(desktop: model, screenSaver: model))
 }
 
 /// The placeholder tile's thumbnail: the same gradient the renderer falls back to

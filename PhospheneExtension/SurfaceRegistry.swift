@@ -119,58 +119,11 @@ final class SurfaceRegistry: Sendable {
         renderers.forEach(body)
     }
 
-    /// Play again every video whose file was replaced on disk since its renderer
-    /// opened it (a video made again under the same name), and refresh its
-    /// snapshot, which System Settings shows as the still.
-    func reloadReplacedVideos() {
-        let showing = lock.withLock { contents in
-            contents.surfaces.values.compactMap { surface in
-                surface.renderer.map { ($0, surface.videoID, surface.destSize, surface.scaleFactor) }
-            }
-        }
-        for (renderer, videoID, destSize, scaleFactor) in showing {
-            let choice = ShuffleController.shared.resolveChoice(videoID)
-            guard let url = findVideoURL(forChoice: choice) else { continue }
-            renderer.reload(to: url, selector: makeVariantSelector(choice: choice, fallback: url))
-            let w = Int(destSize.width * scaleFactor), h = Int(destSize.height * scaleFactor)
-            Task { [url, videoID, w, h] in
-                await writeBMPSnapshot(videoURL: url, videoID: videoID, displayPixelWidth: w, displayPixelHeight: h, replacing: true)
-            }
-        }
-    }
-
-    /// Whether any surface shows the given choice.
-    func hasSurface(showing videoID: String) -> Bool {
-        lock.withLock { $0.surfaces.values.contains { $0.videoID == videoID } }
-    }
-
-    /// Renderers of the surfaces showing the given choice (e.g. the shuffle choice).
-    func renderers(showing videoID: String) -> [VideoRenderer] {
-        lock.withLock { contents in
-            contents.surfaces.values.filter { $0.videoID == videoID }.compactMap(\.renderer)
-        }
-    }
-
-    /// Tear down every surface showing a video that left the library. Returns their keys.
-    func removeSurfaces(showing videoID: String) -> [SurfaceKey] {
-        let removed = lock.withLock { contents -> [SurfaceKey: HostedSurface] in
-            let matches = contents.surfaces.filter { $0.value.videoID == videoID }
-            for key in matches.keys {
-                contents.surfaces[key] = nil
-            }
-            return matches
-        }
-        for surface in removed.values {
-            surface.renderer?.stop()
-            invalidateRemoteContext(surface.caContext)
-        }
-        return Array(removed.keys)
-    }
-
     /// Stop one surface's renderer and invalidate its context, leaving the others
     /// playing. Returns whether there was anything to tear down.
     @discardableResult
     func tearDown(_ key: SurfaceKey) -> Bool {
+        PlaylistController.shared.checkpoint()
         guard let removed = lock.withLock({ $0.surfaces.removeValue(forKey: key) }) else { return false }
         removed.renderer?.stop()
         invalidateRemoteContext(removed.caContext)

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "revision": 7,
+  "media": [
+    {"id":"11111111-1111-4111-8111-111111111111","name":"紫灵 · 测试","filename":"video.mp4","width":3840,"height":2160,"durationSeconds":7,"frameRate":60,"addedAtUnix":1794390000},
+    {"id":"22222222-2222-4222-8222-222222222222","name":"乔苓","filename":"video.mov","width":3840,"height":2160,"durationSeconds":120,"frameRate":29.97,"addedAtUnix":1794390001},
+    {"id":"33333333-3333-4333-8333-333333333333","name":"月下","filename":"video.m4v","width":3840,"height":2160,"durationSeconds":10,"frameRate":30,"addedAtUnix":1794390002}
+  ],
+  "playlist":{"videoIDs":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222","33333333-3333-4333-8333-333333333333"],"advanceMode":"end","intervalSeconds":60,"keepAwakeWhenLockedOnAC":true}
+}

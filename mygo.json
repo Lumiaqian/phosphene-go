@@ -1,0 +1,17 @@
+{
+  "name": "Phosphene Go",
+  "slug": "phosphene-go",
+  "identifier": "local.lumiaqian.phosphenego",
+  "version": "0.1.0",
+  "copyright": "Copyright 2026 Phosphene Go contributors; based on Phosphene by kageroumado",
+  "license": "MIT",
+  "macos": {
+    "minimumSystemVersion": "26.0",
+    "signingIdentity": "-",
+    "icon": "resources/Phosphene.icon"
+  },
+  "urlSchemes": [
+    "phosphenego"
+  ],
+  "icon": "resources/icon.png"
+}

@@ -25,16 +25,7 @@ final class PhospheneExtension: NSObject, AppExtension {
             }
             SystemEvents.start()
             DisplayReconfiguration.start()
-            PrefsSource.start()
-            PowerMonitor.shared.startMonitoring()
-            Task(name: "Power events") {
-                for await power in PowerMonitor.shared.stateChanges() {
-                    PlaybackStore.post(.powerChanged(power))
-                }
-            }
-            DispatchQueue.main.async {
-                MainActor.assumeIsolated { PlaybackStore.shared.startPublishing() }
-            }
+            PlaylistController.shared.start()
         } else {
             let err = String(cString: dlerror())
             extensionLog("INIT (PID: \(ProcessInfo.processInfo.processIdentifier)) — dlopen failed: \(err)")
@@ -73,10 +64,10 @@ final class PhospheneExtension: NSObject, AppExtension {
             { _, _, _, _, _ in
                 VideoLibrary.shared.scan()
                 extensionLog("[Extension] Library changed notification received, re-scanned")
-                SurfaceRegistry.shared.reloadReplacedVideos()
+                PlaylistController.shared.reload()
                 SettingsPush.libraryDidChange()
             },
-            "glass.kagerou.phosphene.libraryChanged" as CFString,
+            "local.lumiaqian.phosphenego.libraryChanged" as CFString,
             nil,
             .deliverImmediately,
         )

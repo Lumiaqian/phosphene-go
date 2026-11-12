@@ -1,722 +1,580 @@
-// !$*UTF8*$!
-{
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 100;
-	objects = {
-
-/* Begin PBXBuildFile section */
-		0B123B6B308406F7003E2449 /* Propofol in Frameworks */ = {isa = PBXBuildFile; productRef = 7B0000000000000000000002 /* Propofol */; };
-		0B123B6C308406F7003E2449 /* Digoxin in Frameworks */ = {isa = PBXBuildFile; productRef = 7C0000000000000000000002 /* Digoxin */; };
-		0B33648A2F4FCB4B00060732 /* PhospheneExtension.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 0B3364832F4FCB4B00060732 /* PhospheneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0B486A22303E6604001CB276 /* TiptoeGitHub in Frameworks */ = {isa = PBXBuildFile; productRef = 7A0000000000000000000002 /* TiptoeGitHub */; };
-/* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		0B3364882F4FCB4B00060732 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA9B91C12E900B9E008812A9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0B3364822F4FCB4B00060732;
-			remoteInfo = PhospheneExtension;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		0B33648B2F4FCB4B00060732 /* Embed ExtensionKit Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
-			dstSubfolder = Product;
-			files = (
-				0B33648A2F4FCB4B00060732 /* PhospheneExtension.appex in Embed ExtensionKit Extensions */,
-			);
-			name = "Embed ExtensionKit Extensions";
-		};
-/* End PBXCopyFilesBuildPhase section */
-
-/* Begin PBXFileReference section */
-		0B3364832F4FCB4B00060732 /* PhospheneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = PhospheneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E5700000000000000000A01 /* PhospheneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhospheneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA9B91C92E900B9E008812A9 /* Phosphene.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Phosphene.app; sourceTree = BUILT_PRODUCTS_DIR; };
-/* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0B33648E2F4FCB4B00060732 /* Exceptions for "PhospheneExtension" folder in "PhospheneExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 0B3364822F4FCB4B00060732 /* PhospheneExtension */;
-		};
-		7E5700000000000000000AA1 /* Exceptions for "PhospheneExtension" folder in "PhospheneTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				GeometryVerdict.swift,
-				PlaybackModel.swift,
-				PlaybackPolicy.swift,
-				RampMath.swift,
-				VariantSelection.swift,
-			);
-			target = 7E5700000000000000000A03 /* PhospheneTests */;
-		};
-		7E5700000000000000000AA2 /* Exceptions for "Phosphene" folder in "PhospheneTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				OcclusionMath.swift,
-				PathSafety.swift,
-				WallpaperEngine/GL.swift,
-				WallpaperEngine/WEBaker.swift,
-				WallpaperEngine/WEFileSystem.swift,
-				WallpaperEngine/WEParticles.swift,
-				WallpaperEngine/WERenderer.swift,
-				WallpaperEngine/WEResources.swift,
-				WallpaperEngine/WEScene.swift,
-				WallpaperEngine/WEShader.swift,
-				WallpaperEngine/WETexture.swift,
-				WallpaperEngine/WorkshopDiscovery.swift,
-				WallpaperStoreParser.swift,
-			);
-			target = 7E5700000000000000000A03 /* PhospheneTests */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		0B3364842F4FCB4B00060732 /* PhospheneExtension */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				0B33648E2F4FCB4B00060732 /* Exceptions for "PhospheneExtension" folder in "PhospheneExtension" target */,
-				7E5700000000000000000AA1 /* Exceptions for "PhospheneExtension" folder in "PhospheneTests" target */,
-			);
-			path = PhospheneExtension;
-			sourceTree = "<group>";
-		};
-		7E5700000000000000000A02 /* PhospheneTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = PhospheneTests;
-			sourceTree = "<group>";
-		};
-		AA9B91CB2E900B9E008812A9 /* Phosphene */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				7E5700000000000000000AA2 /* Exceptions for "Phosphene" folder in "PhospheneTests" target */,
-			);
-			path = Phosphene;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		0B3364802F4FCB4B00060732 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
-		7E5700000000000000000A06 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
-		AA9B91C62E900B9E008812A9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-				0B123B6C308406F7003E2449 /* Digoxin in Frameworks */,
-				0B123B6B308406F7003E2449 /* Propofol in Frameworks */,
-				0B486A22303E6604001CB276 /* TiptoeGitHub in Frameworks */,
-			);
-		};
-/* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXGroup section */
-		AA9B91C02E900B9E008812A9 = {
-			isa = PBXGroup;
-			children = (
-				AA9B91CB2E900B9E008812A9 /* Phosphene */,
-				0B3364842F4FCB4B00060732 /* PhospheneExtension */,
-				7E5700000000000000000A02 /* PhospheneTests */,
-				AA9B91CA2E900B9E008812A9 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		AA9B91CA2E900B9E008812A9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AA9B91C92E900B9E008812A9 /* Phosphene.app */,
-				0B3364832F4FCB4B00060732 /* PhospheneExtension.appex */,
-				7E5700000000000000000A01 /* PhospheneTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-/* End PBXGroup section */
-
-/* Begin PBXNativeTarget section */
-		0B3364822F4FCB4B00060732 /* PhospheneExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0B33648F2F4FCB4B00060732 /* Build configuration list for PBXNativeTarget "PhospheneExtension" */;
-			buildPhases = (
-				0B33647F2F4FCB4B00060732 /* Sources */,
-				0B3364802F4FCB4B00060732 /* Frameworks */,
-				0B3364812F4FCB4B00060732 /* Resources */,
-			);
-			buildRules = (
-			);
-			fileSystemSynchronizedGroups = (
-				0B3364842F4FCB4B00060732 /* PhospheneExtension */,
-			);
-			name = PhospheneExtension;
-			productName = PhospheneExtension;
-			productReference = 0B3364832F4FCB4B00060732 /* PhospheneExtension.appex */;
-			productType = "com.apple.product-type.extensionkit-extension";
-		};
-		7E5700000000000000000A03 /* PhospheneTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 7E5700000000000000000A04 /* Build configuration list for PBXNativeTarget "PhospheneTests" */;
-			buildPhases = (
-				7E5700000000000000000A05 /* Sources */,
-				7E5700000000000000000A06 /* Frameworks */,
-				7E5700000000000000000A07 /* Resources */,
-			);
-			buildRules = (
-			);
-			fileSystemSynchronizedGroups = (
-				7E5700000000000000000A02 /* PhospheneTests */,
-			);
-			name = PhospheneTests;
-			productName = PhospheneTests;
-			productReference = 7E5700000000000000000A01 /* PhospheneTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		AA9B91C82E900B9E008812A9 /* Phosphene */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = AA9B91D42E900B9F008812A9 /* Build configuration list for PBXNativeTarget "Phosphene" */;
-			buildPhases = (
-				AA9B91C52E900B9E008812A9 /* Sources */,
-				AA9B91C62E900B9E008812A9 /* Frameworks */,
-				AA9B91C72E900B9E008812A9 /* Resources */,
-				0B33648B2F4FCB4B00060732 /* Embed ExtensionKit Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0B3364892F4FCB4B00060732 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				AA9B91CB2E900B9E008812A9 /* Phosphene */,
-			);
-			name = Phosphene;
-			packageProductDependencies = (
-				7A0000000000000000000002 /* TiptoeGitHub */,
-				7B0000000000000000000002 /* Propofol */,
-				7C0000000000000000000002 /* Digoxin */,
-			);
-			productName = Phosphene;
-			productReference = AA9B91C92E900B9E008812A9 /* Phosphene.app */;
-			productType = "com.apple.product-type.application";
-		};
-/* End PBXNativeTarget section */
-
-/* Begin PBXProject section */
-		AA9B91C12E900B9E008812A9 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2620;
-				LastUpgradeCheck = 2640;
-				TargetAttributes = {
-					0B3364822F4FCB4B00060732 = {
-						CreatedOnToolsVersion = 26.2;
-					};
-					7E5700000000000000000A03 = {
-						CreatedOnToolsVersion = 26.2;
-					};
-					AA9B91C82E900B9E008812A9 = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
-				};
-			};
-			buildConfigurationList = AA9B91C42E900B9E008812A9 /* Build configuration list for PBXProject "Phosphene" */;
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
-				"zh-Hans",
-			);
-			mainGroup = AA9B91C02E900B9E008812A9;
-			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				7A0000000000000000000001 /* XCRemoteSwiftPackageReference "Tiptoe" */,
-				7B0000000000000000000001 /* XCRemoteSwiftPackageReference "propofol" */,
-				7C0000000000000000000001 /* XCRemoteSwiftPackageReference "digoxin" */,
-			);
-			preferredProjectObjectVersion = 90;
-			productRefGroup = AA9B91CA2E900B9E008812A9 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (
-				AA9B91C82E900B9E008812A9 /* Phosphene */,
-				0B3364822F4FCB4B00060732 /* PhospheneExtension */,
-				7E5700000000000000000A03 /* PhospheneTests */,
-			);
-		};
-/* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		0B3364812F4FCB4B00060732 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		7E5700000000000000000A07 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		AA9B91C72E900B9E008812A9 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
-		0B33647F2F4FCB4B00060732 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-		7E5700000000000000000A05 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-		AA9B91C52E900B9E008812A9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-/* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		0B3364892F4FCB4B00060732 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0B3364822F4FCB4B00060732 /* PhospheneExtension */;
-			targetProxy = 0B3364882F4FCB4B00060732 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin XCBuildConfiguration section */
-		0B33648C2F4FCB4B00060732 /* Debug configuration for PBXNativeTarget "PhospheneExtension" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 52K336H235;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PhospheneExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PhospheneWallpaperExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene.extension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "PhospheneExtension/WallpaperExtension-Bridging-Header.h";
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		0B33648D2F4FCB4B00060732 /* Release configuration for PBXNativeTarget "PhospheneExtension" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 52K336H235;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PhospheneExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = PhospheneWallpaperExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene.extension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "PhospheneExtension/WallpaperExtension-Bridging-Header.h";
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
-		7E5700000000000000000A08 /* Debug configuration for PBXNativeTarget "PhospheneTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
-				DEVELOPMENT_TEAM = 52K336H235;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		7E5700000000000000000A09 /* Release configuration for PBXNativeTarget "PhospheneTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 29;
-				DEVELOPMENT_TEAM = 52K336H235;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
-		AA9B91D22E900B9F008812A9 /* Debug configuration for PBXProject "Phosphene" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
-				SWIFT_UPCOMING_FEATURE_INFER_ISOLATED_CONFORMANCES = YES;
-				SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		AA9B91D32E900B9F008812A9 /* Release configuration for PBXProject "Phosphene" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
-				SWIFT_UPCOMING_FEATURE_INFER_ISOLATED_CONFORMANCES = YES;
-				SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
-		AA9B91D62E900B9F008812A9 /* Release configuration for PBXNativeTarget "Phosphene" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Phosphene;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES_ERROR;
-				CODE_SIGN_ENTITLEMENTS = Phosphene/Phosphene.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 29;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 52K336H235;
-				ENABLE_APP_SANDBOX = NO;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
-				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_MEMORY_SAFETY = YES;
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
-				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
-		AA9B928E2E9057E5008812A9 /* Debug configuration for PBXNativeTarget "Phosphene" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Phosphene;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES_ERROR;
-				CODE_SIGN_ENTITLEMENTS = Phosphene/Phosphene.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 29;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 52K336H235;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
-				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.11.4;
-				PRODUCT_BUNDLE_IDENTIFIER = glass.kagerou.phosphene;
-				PRODUCT_NAME = Phosphene;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_MEMORY_SAFETY = YES;
-				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
-				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-/* End XCBuildConfiguration section */
-
-/* Begin XCConfigurationList section */
-		0B33648F2F4FCB4B00060732 /* Build configuration list for PBXNativeTarget "PhospheneExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0B33648C2F4FCB4B00060732 /* Debug configuration for PBXNativeTarget "PhospheneExtension" */,
-				0B33648D2F4FCB4B00060732 /* Release configuration for PBXNativeTarget "PhospheneExtension" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		7E5700000000000000000A04 /* Build configuration list for PBXNativeTarget "PhospheneTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7E5700000000000000000A08 /* Debug configuration for PBXNativeTarget "PhospheneTests" */,
-				7E5700000000000000000A09 /* Release configuration for PBXNativeTarget "PhospheneTests" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		AA9B91C42E900B9E008812A9 /* Build configuration list for PBXProject "Phosphene" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				AA9B91D22E900B9F008812A9 /* Debug configuration for PBXProject "Phosphene" */,
-				AA9B91D32E900B9F008812A9 /* Release configuration for PBXProject "Phosphene" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		AA9B91D42E900B9F008812A9 /* Build configuration list for PBXNativeTarget "Phosphene" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				AA9B91D62E900B9F008812A9 /* Release configuration for PBXNativeTarget "Phosphene" */,
-				AA9B928E2E9057E5008812A9 /* Debug configuration for PBXNativeTarget "Phosphene" */,
-			);
-			defaultConfigurationName = Release;
-		};
-/* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		7A0000000000000000000001 /* XCRemoteSwiftPackageReference "Tiptoe" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/artginzburg/Tiptoe";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
-			};
-			traits = (
-				GitHubSupport,
-			);
-		};
-		7B0000000000000000000001 /* XCRemoteSwiftPackageReference "propofol" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kageroumado/propofol.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.1;
-			};
-		};
-		7C0000000000000000000001 /* XCRemoteSwiftPackageReference "digoxin" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kageroumado/digoxin.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		7A0000000000000000000002 /* TiptoeGitHub */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7A0000000000000000000001 /* XCRemoteSwiftPackageReference "Tiptoe" */;
-			productName = TiptoeGitHub;
-		};
-		7B0000000000000000000002 /* Propofol */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7B0000000000000000000001 /* XCRemoteSwiftPackageReference "propofol" */;
-			productName = Propofol;
-		};
-		7C0000000000000000000002 /* Digoxin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7C0000000000000000000001 /* XCRemoteSwiftPackageReference "digoxin" */;
-			productName = Digoxin;
-		};
-/* End XCSwiftPackageProductDependency section */
-	};
-	rootObject = AA9B91C12E900B9E008812A9 /* Project object */;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>classes</key>
+	<dict/>
+	<key>objectVersion</key>
+	<string>100</string>
+	<key>archiveVersion</key>
+	<string>1</string>
+	<key>objects</key>
+	<dict>
+		<key>AA9B91D22E900B9F008812A9</key>
+		<dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
+				<string>YES</string>
+				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
+				<string>YES</string>
+				<key>SWIFT_OPTIMIZATION_LEVEL</key>
+				<string>-Onone</string>
+				<key>SWIFT_STRICT_CONCURRENCY</key>
+				<string>complete</string>
+				<key>SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INFINITE_RECURSION</key>
+				<string>YES</string>
+				<key>ONLY_ACTIVE_ARCH</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNUSED_VARIABLE</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>COPY_PHASE_STRIP</key>
+				<string>NO</string>
+				<key>CLANG_WARN_BOOL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_ENUM_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_COMMA</key>
+				<string>YES</string>
+				<key>SWIFT_ACTIVE_COMPILATION_CONDITIONS</key>
+				<string>DEBUG $(inherited)</string>
+				<key>MACOSX_DEPLOYMENT_TARGET</key>
+				<string>26.0</string>
+				<key>CLANG_WARN_INT_CONVERSION</key>
+				<string>YES</string>
+				<key>SWIFT_VERSION</key>
+				<string>6.0</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
+				<string>YES</string>
+				<key>SDKROOT</key>
+				<string>macosx</string>
+				<key>CLANG_WARN_EMPTY_BODY</key>
+				<string>YES</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>INCLUDE_SOURCE</string>
+				<key>MTL_FAST_MATH</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_ARC</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>GCC_C_LANGUAGE_STANDARD</key>
+				<string>gnu17</string>
+				<key>DEAD_CODE_STRIPPING</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_MODULES</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_INFER_ISOLATED_CONFORMANCES</key>
+				<string>YES</string>
+				<key>ALWAYS_SEARCH_USER_PATHS</key>
+				<string>NO</string>
+				<key>ENABLE_TESTABILITY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
+				<string>YES</string>
+				<key>GCC_NO_COMMON_BLOCKS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
+				<string>YES_ERROR</string>
+				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
+				<string>YES</string>
+				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
+				<string>gnu++20</string>
+				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
+				<string>YES</string>
+				<key>GCC_DYNAMIC_NO_PIC</key>
+				<string>NO</string>
+				<key>DEBUG_INFORMATION_FORMAT</key>
+				<string>dwarf</string>
+				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NONNULL</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_WEAK</key>
+				<string>YES</string>
+				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
+				<string>YES</string>
+				<key>GCC_OPTIMIZATION_LEVEL</key>
+				<string>0</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
+				<string>YES</string>
+				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
+				<string>YES_ERROR</string>
+				<key>GCC_WARN_UNUSED_FUNCTION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNREACHABLE_CODE</key>
+				<string>YES</string>
+				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
+				<string>YES</string>
+				<key>GCC_PREPROCESSOR_DEFINITIONS</key>
+				<array>
+					<string>DEBUG=1</string>
+					<string>$(inherited)</string>
+				</array>
+				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
+				<string>YES</string>
+			</dict>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
+		<key>0B33648D2F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>MARKETING_VERSION</key>
+				<string>0.1.0</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>29</string>
+				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
+				<string>local.lumiaqian.phosphenego.extension</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
+				<string>PhospheneWallpaperExtension</string>
+				<key>MACOSX_DEPLOYMENT_TARGET</key>
+				<string>26.0</string>
+				<key>DEAD_CODE_STRIPPING</key>
+				<string>YES</string>
+				<key>CODE_SIGN_STYLE</key>
+				<string>Automatic</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>@executable_path/../Frameworks</string>
+					<string>@executable_path/../../../../Frameworks</string>
+				</array>
+				<key>SWIFT_VERSION</key>
+				<string>6.0</string>
+				<key>PRODUCT_NAME</key>
+				<string>$(TARGET_NAME)</string>
+				<key>SWIFT_APPROACHABLE_CONCURRENCY</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_NSHumanReadableCopyright</key>
+				<string></string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>ENABLE_APP_SANDBOX</key>
+				<string>YES</string>
+				<key>SWIFT_OBJC_BRIDGING_HEADER</key>
+				<string>PhospheneExtension/WallpaperExtension-Bridging-Header.h</string>
+				<key>SWIFT_EMIT_LOC_STRINGS</key>
+				<string>YES</string>
+				<key>ENABLE_HARDENED_RUNTIME</key>
+				<string>YES</string>
+				<key>INFOPLIST_FILE</key>
+				<string>PhospheneExtension/Info.plist</string>
+				<key>GENERATE_INFOPLIST_FILE</key>
+				<string>YES</string>
+			</dict>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
+		<key>0B3364842F4FCB4B00060732</key>
+		<dict>
+			<key>path</key>
+			<string>PhospheneExtension</string>
+			<key>isa</key>
+			<string>PBXFileSystemSynchronizedRootGroup</string>
+			<key>exceptions</key>
+			<array>
+				<string>0B33648E2F4FCB4B00060732</string>
+			</array>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>0B33647F2F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXSourcesBuildPhase</string>
+			<key>files</key>
+			<array/>
+		</dict>
+		<key>0B33648E2F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileSystemSynchronizedBuildFileExceptionSet</string>
+			<key>membershipExceptions</key>
+			<array>
+				<string>Info.plist</string>
+			</array>
+			<key>target</key>
+			<string>0B3364822F4FCB4B00060732</string>
+		</dict>
+		<key>AA9B91D32E900B9F008812A9</key>
+		<dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
+				<string>YES</string>
+				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
+				<string>YES</string>
+				<key>SWIFT_STRICT_CONCURRENCY</key>
+				<string>complete</string>
+				<key>SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_INFINITE_RECURSION</key>
+				<string>YES</string>
+				<key>SWIFT_COMPILATION_MODE</key>
+				<string>wholemodule</string>
+				<key>GCC_WARN_UNUSED_VARIABLE</key>
+				<string>YES</string>
+				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>COPY_PHASE_STRIP</key>
+				<string>NO</string>
+				<key>CLANG_WARN_BOOL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_ENUM_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_COMMA</key>
+				<string>YES</string>
+				<key>MACOSX_DEPLOYMENT_TARGET</key>
+				<string>26.0</string>
+				<key>CLANG_WARN_INT_CONVERSION</key>
+				<string>YES</string>
+				<key>SWIFT_VERSION</key>
+				<string>6.0</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
+				<string>YES</string>
+				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
+				<string>YES</string>
+				<key>SDKROOT</key>
+				<string>macosx</string>
+				<key>CLANG_WARN_EMPTY_BODY</key>
+				<string>YES</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>NO</string>
+				<key>MTL_FAST_MATH</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_ARC</key>
+				<string>YES</string>
+				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>GCC_C_LANGUAGE_STANDARD</key>
+				<string>gnu17</string>
+				<key>DEAD_CODE_STRIPPING</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_MODULES</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_INFER_ISOLATED_CONFORMANCES</key>
+				<string>YES</string>
+				<key>ALWAYS_SEARCH_USER_PATHS</key>
+				<string>NO</string>
+				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
+				<string>YES</string>
+				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
+				<string>YES_ERROR</string>
+				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
+				<string>YES</string>
+				<key>GCC_NO_COMMON_BLOCKS</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_NONISOLATED_NONSENDING_BY_DEFAULT</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
+				<string>YES_ERROR</string>
+				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
+				<string>YES</string>
+				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
+				<string>gnu++20</string>
+				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
+				<string>YES</string>
+				<key>DEBUG_INFORMATION_FORMAT</key>
+				<string>dwarf-with-dsym</string>
+				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NONNULL</key>
+				<string>YES</string>
+				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
+				<string>YES_AGGRESSIVE</string>
+				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
+				<string>YES</string>
+				<key>CLANG_ENABLE_OBJC_WEAK</key>
+				<string>YES</string>
+				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
+				<string>YES</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
+				<string>YES</string>
+				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
+				<string>YES_ERROR</string>
+				<key>GCC_WARN_UNUSED_FUNCTION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_UNREACHABLE_CODE</key>
+				<string>YES</string>
+				<key>ENABLE_NS_ASSERTIONS</key>
+				<string>NO</string>
+				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
+				<string>YES</string>
+				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
+				<string>YES</string>
+			</dict>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
+		<key>0B3364802F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFrameworksBuildPhase</string>
+			<key>files</key>
+			<array/>
+		</dict>
+		<key>0B33648F2F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+			<key>buildConfigurations</key>
+			<array>
+				<string>0B33648C2F4FCB4B00060732</string>
+				<string>0B33648D2F4FCB4B00060732</string>
+			</array>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+		</dict>
+		<key>0B3364812F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXResourcesBuildPhase</string>
+			<key>files</key>
+			<array/>
+		</dict>
+		<key>AA9B91C42E900B9E008812A9</key>
+		<dict>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+			<key>buildConfigurations</key>
+			<array>
+				<string>AA9B91D22E900B9F008812A9</string>
+				<string>AA9B91D32E900B9F008812A9</string>
+			</array>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+		</dict>
+		<key>AA9B91C02E900B9E008812A9</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+			<key>children</key>
+			<array>
+				<string>0B3364842F4FCB4B00060732</string>
+				<string>AA9B91CA2E900B9E008812A9</string>
+			</array>
+		</dict>
+		<key>0B3364822F4FCB4B00060732</key>
+		<dict>
+			<key>buildConfigurationList</key>
+			<string>0B33648F2F4FCB4B00060732</string>
+			<key>productReference</key>
+			<string>0B3364832F4FCB4B00060732</string>
+			<key>productType</key>
+			<string>com.apple.product-type.extensionkit-extension</string>
+			<key>productName</key>
+			<string>PhospheneExtension</string>
+			<key>isa</key>
+			<string>PBXNativeTarget</string>
+			<key>fileSystemSynchronizedGroups</key>
+			<array>
+				<string>0B3364842F4FCB4B00060732</string>
+			</array>
+			<key>buildPhases</key>
+			<array>
+				<string>0B33647F2F4FCB4B00060732</string>
+				<string>0B3364802F4FCB4B00060732</string>
+				<string>0B3364812F4FCB4B00060732</string>
+			</array>
+			<key>name</key>
+			<string>PhospheneExtension</string>
+			<key>buildRules</key>
+			<array/>
+		</dict>
+		<key>0B3364832F4FCB4B00060732</key>
+		<dict>
+			<key>path</key>
+			<string>PhospheneExtension.appex</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>includeInIndex</key>
+			<string>0</string>
+			<key>explicitFileType</key>
+			<string>wrapper.extensionkit-extension</string>
+			<key>sourceTree</key>
+			<string>BUILT_PRODUCTS_DIR</string>
+		</dict>
+		<key>AA9B91CA2E900B9E008812A9</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Products</string>
+			<key>children</key>
+			<array>
+				<string>0B3364832F4FCB4B00060732</string>
+			</array>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>0B33648C2F4FCB4B00060732</key>
+		<dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>MARKETING_VERSION</key>
+				<string>0.1.0</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>29</string>
+				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
+				<string>local.lumiaqian.phosphenego.extension</string>
+				<key>STRING_CATALOG_GENERATE_SYMBOLS</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_CFBundleDisplayName</key>
+				<string>PhospheneWallpaperExtension</string>
+				<key>MACOSX_DEPLOYMENT_TARGET</key>
+				<string>26.0</string>
+				<key>DEAD_CODE_STRIPPING</key>
+				<string>YES</string>
+				<key>CODE_SIGN_STYLE</key>
+				<string>Automatic</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>@executable_path/../Frameworks</string>
+					<string>@executable_path/../../../../Frameworks</string>
+				</array>
+				<key>SWIFT_VERSION</key>
+				<string>6.0</string>
+				<key>PRODUCT_NAME</key>
+				<string>$(TARGET_NAME)</string>
+				<key>SWIFT_APPROACHABLE_CONCURRENCY</key>
+				<string>YES</string>
+				<key>SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY</key>
+				<string>YES</string>
+				<key>INFOPLIST_KEY_NSHumanReadableCopyright</key>
+				<string></string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>ENABLE_APP_SANDBOX</key>
+				<string>YES</string>
+				<key>SWIFT_OBJC_BRIDGING_HEADER</key>
+				<string>PhospheneExtension/WallpaperExtension-Bridging-Header.h</string>
+				<key>SWIFT_EMIT_LOC_STRINGS</key>
+				<string>YES</string>
+				<key>ENABLE_HARDENED_RUNTIME</key>
+				<string>YES</string>
+				<key>INFOPLIST_FILE</key>
+				<string>PhospheneExtension/Info.plist</string>
+				<key>GENERATE_INFOPLIST_FILE</key>
+				<string>YES</string>
+			</dict>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
+		<key>AA9B91C12E900B9E008812A9</key>
+		<dict>
+			<key>buildConfigurationList</key>
+			<string>AA9B91C42E900B9E008812A9</string>
+			<key>packageReferences</key>
+			<array/>
+			<key>targets</key>
+			<array>
+				<string>0B3364822F4FCB4B00060732</string>
+			</array>
+			<key>minimizedProjectReferenceProxies</key>
+			<string>1</string>
+			<key>developmentRegion</key>
+			<string>en</string>
+			<key>knownRegions</key>
+			<array>
+				<string>en</string>
+				<string>Base</string>
+				<string>zh-Hans</string>
+			</array>
+			<key>isa</key>
+			<string>PBXProject</string>
+			<key>productRefGroup</key>
+			<string>AA9B91CA2E900B9E008812A9</string>
+			<key>projectDirPath</key>
+			<string></string>
+			<key>attributes</key>
+			<dict>
+				<key>LastSwiftUpdateCheck</key>
+				<string>2620</string>
+				<key>BuildIndependentTargetsInParallel</key>
+				<string>1</string>
+				<key>LastUpgradeCheck</key>
+				<string>2640</string>
+				<key>TargetAttributes</key>
+				<dict>
+					<key>0B3364822F4FCB4B00060732</key>
+					<dict>
+						<key>CreatedOnToolsVersion</key>
+						<string>26.2</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>hasScannedForEncodings</key>
+			<string>0</string>
+			<key>mainGroup</key>
+			<string>AA9B91C02E900B9E008812A9</string>
+			<key>preferredProjectObjectVersion</key>
+			<string>90</string>
+			<key>projectRoot</key>
+			<string></string>
+		</dict>
+	</dict>
+	<key>rootObject</key>
+	<string>AA9B91C12E900B9E008812A9</string>
+</dict>
+</plist>

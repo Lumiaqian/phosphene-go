@@ -8,13 +8,13 @@ enum SystemEvents {
 
         let workspace = NSWorkspace.shared.notificationCenter
         workspace.addObserver(forName: NSWorkspace.screensDidSleepNotification, object: nil, queue: .main) { _ in
+            PlaylistController.shared.checkpoint()
             extensionLog("[Extension] Displays asleep")
             PlaybackStore.post(.displaysAsleepChanged(true))
         }
         workspace.addObserver(forName: NSWorkspace.screensDidWakeNotification, object: nil, queue: .main) { _ in
             extensionLog("[Extension] Displays awake")
             PlaybackStore.post(.displaysAsleepChanged(false))
-            ShuffleController.shared.noteWake()
         }
 
         // loginwindow reports the lock before WallpaperAgent updates any surface, which
@@ -27,7 +27,6 @@ enum SystemEvents {
         distributed.addObserver(forName: .init("com.apple.screenIsUnlocked"), object: nil, queue: .main) { _ in
             extensionLog("[Extension] Screen unlocked")
             PlaybackStore.post(.screenLockChanged(false))
-            ShuffleController.shared.noteWake()
         }
     }
 

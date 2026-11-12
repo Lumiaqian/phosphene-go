@@ -29,7 +29,7 @@ func loadCachedSnapshotImage(forChoice videoID: String?) -> CGImage? {
     let bmpURL: URL?
     if let videoID {
         let hash = videoHash(for: videoID)
-        bmpURL = bmpFiles.first { $0.lastPathComponent.hasPrefix(hash) } ?? bmpFiles.first
+        bmpURL = bmpFiles.first { $0.lastPathComponent.hasPrefix(hash) }
     } else {
         bmpURL = bmpFiles.first
     }
@@ -103,6 +103,38 @@ func writeBMPSnapshot(videoURL: URL, videoID: String? = nil, displayPixelWidth: 
         return
     }
 
+    guard let bmp = encodeBMP(cgImage) else { return }
+
+    let timestamp = Date().timeIntervalSinceReferenceDate
+    let timestampHex = String(format: "%016llx", timestamp.bitPattern)
+    let filename = "\(hashHex)-\(displayPixelWidth)-\(displayPixelHeight)-0-\(timestampHex).bmp"
+
+    // Remove old BMP files for this video from cache
+    if let contents = try? FileManager.default.contentsOfDirectory(at: cacheDir, includingPropertiesForKeys: nil) {
+        for file in contents where file.pathExtension == "bmp" && file.lastPathComponent.hasPrefix(hashHex) {
+            try? FileManager.default.removeItem(at: file)
+        }
+    }
+
+    let bmpURL = cacheDir.appendingPathComponent(filename)
+    do {
+        try bmp.write(to: bmpURL, options: .atomic)
+        traceLog("  [BMPCache] Wrote \(bmp.count) bytes → \(filename)")
+    } catch {
+        traceLog("  [BMPCache] Write failed: \(error)")
+    }
+
+    // Write cacheVersion.db
+    let versionURL = cacheDir.appendingPathComponent("cacheVersion.db")
+    do {
+        try Data("{\"version\":2}".utf8).write(to: versionURL, options: .atomic)
+    } catch {
+        traceLog("  [BMPCache] cacheVersion.db failed: \(error)")
+    }
+}
+
+/// Encode a decoded frame without touching the cache directory.
+private func encodeBMP(_ cgImage: CGImage) -> Data? {
     let width = cgImage.width
     let height = cgImage.height
     let bytesPerPixel = 3 // 24bpp BGR
@@ -132,7 +164,7 @@ func writeBMPSnapshot(videoURL: URL, videoID: String? = nil, displayPixelWidth: 
 
     guard rendered else {
         traceLog("  [BMPCache] CGContext render failed")
-        return
+        return nil
     }
 
     // Convert BGRA → BGR24 with row padding
@@ -176,32 +208,7 @@ func writeBMPSnapshot(videoURL: URL, videoID: String? = nil, displayPixelWidth: 
 
     bmp.append(pixelData)
 
-    let timestamp = Date().timeIntervalSinceReferenceDate
-    let timestampHex = String(format: "%016llx", timestamp.bitPattern)
-    let filename = "\(hashHex)-\(displayPixelWidth)-\(displayPixelHeight)-0-\(timestampHex).bmp"
-
-    // Remove old BMP files for this video from cache
-    if let contents = try? FileManager.default.contentsOfDirectory(at: cacheDir, includingPropertiesForKeys: nil) {
-        for file in contents where file.pathExtension == "bmp" && file.lastPathComponent.hasPrefix(hashHex) {
-            try? FileManager.default.removeItem(at: file)
-        }
-    }
-
-    let bmpURL = cacheDir.appendingPathComponent(filename)
-    do {
-        try bmp.write(to: bmpURL, options: .atomic)
-        traceLog("  [BMPCache] Wrote \(bmp.count) bytes → \(filename)")
-    } catch {
-        traceLog("  [BMPCache] Write failed: \(error)")
-    }
-
-    // Write cacheVersion.db
-    let versionURL = cacheDir.appendingPathComponent("cacheVersion.db")
-    do {
-        try Data("{\"version\":2}".utf8).write(to: versionURL, options: .atomic)
-    } catch {
-        traceLog("  [BMPCache] cacheVersion.db failed: \(error)")
-    }
+    return bmp
 }
 
 /// Generate a consistent hash prefix for a video identifier.

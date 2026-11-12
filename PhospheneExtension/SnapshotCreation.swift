@@ -4,35 +4,16 @@ import CoreMedia
 
 /// Create a WallpaperSnapshotXPC containing an IOSurface with a video frame.
 ///
-/// - Parameter currentTime: If provided, captures the frame at this time (e.g. from an
-///   active renderer's timebase). Falls back to a random time within the video duration,
-///   avoiding always returning frame 0.
-func createSnapshotViaRuntime(currentTime: CMTime? = nil) async -> AnyObject? {
-    guard let videoURL = findVideoURL() else {
-        extensionLog("  [Snapshot] No video file found")
-        return nil
-    }
-
+/// The caller supplies the surface's actual asset and clock; displays never borrow
+/// one another's snapshot. Loop offsets are normalized back into the video.
+func createSnapshotViaRuntime(videoURL: URL, currentTime: CMTime? = nil) async -> AnyObject? {
     let asset = AVURLAsset(url: videoURL)
     let generator = AVAssetImageGenerator(asset: asset)
     generator.appliesPreferredTrackTransform = true
-
-    let requestTime: CMTime
-    if let currentTime, currentTime.isValid, currentTime.seconds > 0 {
-        requestTime = currentTime
-    } else {
-        do {
-            let duration = try await asset.load(.duration)
-            if duration.isValid, duration.seconds > 0 {
-                let randomOffset = Double.random(in: 0 ..< duration.seconds)
-                requestTime = CMTime(seconds: randomOffset, preferredTimescale: duration.timescale)
-            } else {
-                requestTime = .zero
-            }
-        } catch {
-            requestTime = .zero
-        }
-    }
+    let duration = await (try? asset.load(.duration).seconds) ?? 0
+    let seconds = currentTime?.seconds ?? 0
+    let position = duration > 0 && seconds.isFinite ? max(0, seconds).truncatingRemainder(dividingBy: duration) : 0
+    let requestTime = CMTime(seconds: position, preferredTimescale: 60_000)
 
     let image: CGImage
     do {
