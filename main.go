@@ -41,6 +41,10 @@ type application struct {
 	preview       *ui.VideoPlayer
 	previewWindow *mygo.Window
 	prefs         prefs
+	// Wallpaper recovery (recovery.go).
+	stuckSignals int64     // the extension's calls for help seen so far
+	stallSince   time.Time // when the displays began waiting, or the extension went silent
+	repairedAt   time.Time // when the app last restarted WallpaperAgent
 }
 
 func main() {
@@ -94,6 +98,7 @@ func main() {
 		tray, err := mygo.NewTray(mygo.TrayOptions{Icon: trayIcon(), IconIsTemplate: true, ToolTip: "Phosphene Go", Menu: mygo.NewMenu([]*mygo.MenuItem{
 			{Label: "打开资料库", Click: func(*mygo.MenuItem, *mygo.Window) { app.open() }},
 			{Label: "系统墙纸设置", Click: func(*mygo.MenuItem, *mygo.Window) { openWallpaperSettings() }},
+			{Label: "修复壁纸（重建墙纸服务）", Click: func(*mygo.MenuItem, *mygo.Window) { app.repairWallpaper("正在重建墙纸服务…", time.Now()) }},
 			mygo.Separator(), {Label: "退出管理端（壁纸继续播放）", Click: func(*mygo.MenuItem, *mygo.Window) { mygo.App.Quit() }},
 		})})
 		if err != nil {
@@ -107,8 +112,10 @@ func main() {
 			for range time.NewTicker(2 * time.Second).C {
 				r, _ := catalog.ReadRuntime(app.root)
 				displays, err := app.host.Displays()
+				stuck, _ := app.host.AgentStuckSignals()
 				mygo.RunOnMain(func() {
 					app.runtime = r
+					app.observeWallpaper(r, stuck, time.Now())
 					if err == nil {
 						app.displays = displays
 					}

@@ -134,6 +134,9 @@ func (a *application) sidebar(c *ui.Context) {
 		if len(a.displays) == 0 {
 			ui.Text(c, "未检测到显示器").FontSize(12).TextColor(t.TextMuted)
 		}
+		if a.wallpaperStalled(time.Now()) {
+			glassButton(c, iconAlert, "修复壁纸", true).OnClick(func() { a.repairWallpaper("正在重建墙纸服务…", time.Now()) })
+		}
 		for _, d := range a.displays {
 			s := a.displayState(d.Identifier)
 			ui.Row(c.Key("side-" + d.Identifier)).Gap(8).AlignItems(ui.Center).Children(func() {
@@ -299,6 +302,7 @@ func (a *application) playlistView(c *ui.Context) {
 		glassButton(c, iconExternal, "系统墙纸设置", false).OnClick(openWallpaperSettings)
 	}, func(top float32) {
 		scrollBody(c, top, 0, func() {
+			a.repairBanner(c)
 			// Displays.
 			ui.Column(c).Gap(10).FillWidth().Children(func() {
 				sectionTitle(c, "显示器")
@@ -485,7 +489,7 @@ func (a *application) settingsView(c *ui.Context) {
 						}
 					})
 					ui.Divider(c)
-					groupRow(c, "登录时启动管理端", "关闭窗口后保留菜单栏图标；完全退出后壁纸仍由系统扩展继续播放。", func() {
+					groupRow(c, "登录时启动管理端", "关闭窗口后保留菜单栏图标；完全退出后壁纸仍由系统扩展继续播放。管理端在运行时，才能在墙纸服务卡住时自动修复。", func() {
 						if glassSwitch(c, &a.login, "登录启动", false) {
 							if e := mygo.App.SetOpenAtLogin(a.login); e != nil {
 								a.status = e.Error()
@@ -571,6 +575,24 @@ func (a *application) lookPreview(c *ui.Context, l *look) {
 		l.fillPane(c, ui.Box(c).Absolute().Top(9).Left(25).Right(4).Height(14).Radius(5))
 		l.fillPane(c, ui.Box(c).Absolute().Top(26).Left(25).Right(4).Height(14).Radius(5))
 		l.fillControl(c, ui.Box(c).Absolute().Top(14).Right(8).Size(12, 5).Radius(3), glass.Glass{Tint: t.Accent})
+	})
+}
+
+// repairBanner offers to rebuild WallpaperAgent while the wallpaper looks
+// stuck (recovery.go).
+func (a *application) repairBanner(c *ui.Context) {
+	if !a.wallpaperStalled(time.Now()) {
+		return
+	}
+	t := c.Theme()
+	current.fillControl(c, ui.Row(c).Gap(12).AlignItems(ui.Center).Padding(12, 14).Radius(14).FillWidth(),
+		glass.Glass{Tint: t.Warning.Alpha(0.3)}).Children(func() {
+		ui.Icon(c, iconAlert).FontSize(18).TextColor(t.Warning)
+		ui.Column(c).Gap(2).Grow(1).MinWidth(0).Children(func() {
+			ui.Text(c, "壁纸好像停了").FontWeight(600)
+			ui.Text(c, "系统墙纸服务没有响应。修复会重建它，所有显示器的墙纸会闪一下；锁屏时出现属于正常，没在用本壁纸也可以忽略。").FontSize(11).TextColor(t.TextMuted)
+		})
+		glassButton(c, nil, "修复壁纸", true).OnClick(func() { a.repairWallpaper("正在重建墙纸服务…", time.Now()) })
 	})
 }
 

@@ -3,13 +3,30 @@ import AVFoundation
 import CoreGraphics
 import Foundation
 import ImageIO
+import os
 import UniformTypeIdentifiers
 
 func makeHost() throws -> any Host {
     NativeHost()
 }
 
+/// Calls for help the extension posted (SpiralRecovery.agentStuckNotification).
+private let stuckSignalCount = OSAllocatedUnfairLock(initialState: Int64(0))
+
 final class NativeHost: Host {
+    init() {
+        // Darwin notifications carry no context; the observer only counts them.
+        CFNotificationCenterAddObserver(
+            CFNotificationCenterGetDarwinNotifyCenter(), nil,
+            { _, _, _, _, _ in stuckSignalCount.withLock { $0 += 1 } },
+            "local.lumiaqian.phosphenego.agentStuck" as CFString, nil, .deliverImmediately,
+        )
+    }
+
+    func agentStuckSignals() throws -> Int64 {
+        stuckSignalCount.withLock { $0 }
+    }
+
     func probe(path: String, thumbnailPath: String) async throws -> MediaInfo {
         let asset = AVURLAsset(url: URL(fileURLWithPath: path))
         guard let track = try await asset.loadTracks(withMediaType: .video).first else {

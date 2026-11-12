@@ -29,4 +29,8 @@ type Host interface {
 	Displays() ([]DisplayInfo, error)
 	// NotifyLibraryChanged invalidates this provider's tiles and notifies its extension.
 	NotifyLibraryChanged() error
+	// AgentStuckSignals counts the extension's calls for help since the host
+	// was made: it posts one when WallpaperAgent stops serving it, for the
+	// app to restart WallpaperAgent, which the sandboxed extension cannot.
+	AgentStuckSignals() (int64, error)
 }
