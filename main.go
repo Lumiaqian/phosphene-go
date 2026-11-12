@@ -27,7 +27,8 @@ type application struct {
 	root          string
 	config        catalog.Config
 	window        *mygo.Window
-	page          int
+	section       string
+	grid          ui.GridState
 	selected      string
 	rename        string
 	interval      string
@@ -39,6 +40,7 @@ type application struct {
 	displays      []platform.DisplayInfo
 	preview       *ui.VideoPlayer
 	previewWindow *mygo.Window
+	prefs         prefs
 }
 
 func main() {
@@ -46,7 +48,7 @@ func main() {
 	if !mygo.App.RequestSingleInstanceLock() {
 		return
 	}
-	app := &application{root: catalog.Root(), thumbs: map[string]*ui.Bitmap{}}
+	app := &application{root: catalog.Root(), section: sectionLibrary, thumbs: map[string]*ui.Bitmap{}}
 	mygo.App.OnWindowAllClosed(func() {})
 	mygo.App.OnActivate(func(visible bool) {
 		if !visible && !(len(os.Args) > 2 && os.Args[1] == "--import") {
@@ -71,6 +73,8 @@ func main() {
 			return
 		}
 		app.interval = strconv.Itoa(app.config.Playlist.IntervalSeconds)
+		app.prefs = loadPrefs()
+		mygo.Theme.SetSource(app.prefs.themeSource())
 		app.login = mygo.App.OpenAtLogin()
 		if len(os.Args) > 2 && os.Args[1] == "--import" {
 			go func() {
@@ -128,7 +132,11 @@ func (a *application) open() {
 		a.window.Focus()
 		return
 	}
-	a.window = mygo.NewWindow(mygo.WindowOptions{Title: "Phosphene Go", Width: 1060, Height: 760, Content: ui.View(a.view)})
+	a.window = mygo.NewWindow(mygo.WindowOptions{
+		Title: "Phosphene Go", Width: 1100, Height: 760, MinWidth: 760, MinHeight: 520,
+		TitleBarStyle: mygo.TitleBarHiddenInset, TitleBarHeight: titleBarHeight,
+		Content: ui.View(a.view),
+	})
 	a.window.OnClosed(func() { a.window = nil })
 }
 func openWallpaperSettings() {
