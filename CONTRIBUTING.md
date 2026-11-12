@@ -2,7 +2,7 @@
 
 首版基于 Phosphene v1.11.4，使用 MyGO v0.9.0 管理端和 Swift 扩展。开发入口与工具链见 README。
 
-修改播放、获取表面或 teardown 前，先读 `docs/ARCHITECTURE.md`；私有系统接入还应参照 `REFERENCE.md` 和 `docs/UPSTREAM-PLAYBACK-STATE.md`。每个远程表面必须使用独立 CAContext；同一显示器的持久进度只由播放控制器管理。
+修改播放、获取表面或 teardown 前，先读 `docs/ARCHITECTURE.md`；私有系统接入还应参照 `docs/upstream/` 里的 `REFERENCE.md` 和 `PLAYBACK-STATE.md`。每个远程表面必须使用独立 CAContext；同一显示器的持久进度只由播放控制器管理。
 
 Go 写配置，扩展写运行进度。不能把读取器 EOF 当成展示结束，也不能用进程运行或日志“播放”替代真实画面的验收。UI 预览不推进桌面会话，运行时显示器数字编号不持久化为身份。
 

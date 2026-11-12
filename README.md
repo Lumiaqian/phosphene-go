@@ -76,4 +76,4 @@ SwiftFormat / SwiftLint 使用 Homebrew 的独立工具。生成的桥接文件�
 
 基线提交：`cee21cef52380505d3593872ec53c1b56dc54e6e`，对应 Phosphene `v1.11.4`。
 
-原生系统接入和渲染实现来自 [kageroumado/phosphene](https://github.com/kageroumado/phosphene)。[MyGO](https://github.com/egoist/mygo) 固定为 `v0.9.0`。[LICENSE](LICENSE) 保留原作者的 MIT 声明，并随本地应用打包。上游私有接口研究保留在 `REFERENCE.md` 和 `docs/UPSTREAM-PLAYBACK-STATE.md` 中，当前产品状态以本仓库文档为准。
+原生系统接入和渲染实现来自 [kageroumado/phosphene](https://github.com/kageroumado/phosphene)。[MyGO](https://github.com/egoist/mygo) 固定为 `v0.9.0`。[LICENSE](LICENSE) 保留原作者的 MIT 声明，并随本地应用打包。上游私有接口研究保留在 `docs/upstream/` 中，当前产品状态以本仓库文档为准。

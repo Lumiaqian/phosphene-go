@@ -1,6 +1,6 @@
 # phosphene reference
 
-[Overview](README.md)
+[Overview](../../README.md)
 
 ## Architecture
 
@@ -75,7 +75,7 @@ trash ~/Library/Containers/glass.kagerou.phosphene.extension/Data/Documents/VERB
 killall WallpaperAgent
 ```
 
-Attach the (verbose) log to a bug report — see `.github/ISSUE_TEMPLATE`.
+Attach the (verbose) log to a bug report — see `.github/ISSUE_TEMPLATE` in [the upstream repository](https://github.com/kageroumado/phosphene).
 
 ### Wallpaper stuck, grey, or showing the wrong video
 
